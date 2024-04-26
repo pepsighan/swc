@@ -330,10 +330,23 @@ where
                 })
                 .collect::<Vec<_>>();
 
+            // Ignore the unloaded modules that failed, I want whatever data that can
+            // be salvaged.
+            // TODO: Load other modules such as css and images in the future.
+
+            let errors = loaded
+                .iter()
+                .filter_map(|v| v.as_ref().err())
+                .collect::<Vec<_>>();
+
+            tracing::error!("unresolved imports: {:?}", errors);
+
+            let loaded = loaded.into_iter().filter_map(|v| v.ok());
+
             for res in loaded {
-                // TODO: Report error and proceed instead of returning an error
+                // TODO: Report error and proceed instead of returning an error -- old
                 let (id, local_mark, export_mark, file_name, decl, is_dynamic, is_unconditional) =
-                    res?;
+                    res;
 
                 let src = Source {
                     is_loaded_synchronously: !is_dynamic,
