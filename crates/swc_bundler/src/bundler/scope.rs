@@ -9,7 +9,7 @@ use crate::{
 };
 
 #[derive(Debug, Default)]
-pub(super) struct Scope {
+pub struct Scope {
     pub module_id_gen: ModuleIdGenerator,
 
     loaded_modules: CloneMap<ModuleId, ()>,
