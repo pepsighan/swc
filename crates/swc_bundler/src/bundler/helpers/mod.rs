@@ -7,7 +7,7 @@ use swc_ecma_parser::parse_file_as_module;
 use swc_ecma_utils::{drop_span, prepend_stmts};
 
 #[derive(Debug, Default)]
-pub(crate) struct Helpers {
+pub struct Helpers {
     /// `__swcpack_require__`
     pub require: AtomicBool,
 }

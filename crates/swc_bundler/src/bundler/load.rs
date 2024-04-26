@@ -25,7 +25,7 @@ use crate::{
 };
 /// Module after applying transformations.
 #[derive(Debug, Clone)]
-pub(crate) struct TransformedModule {
+pub struct TransformedModule {
     pub id: ModuleId,
     pub fm: Lrc<SourceFile>,
     pub module: Lrc<Module>,
@@ -111,7 +111,7 @@ where
         })
     }
 
-    fn load(&self, file_name: &FileName) -> Result<(ModuleId, ModuleData), Error> {
+    pub fn load(&self, file_name: &FileName) -> Result<(ModuleId, ModuleData), Error> {
         self.run(|| {
             let (module_id, _, _) = self.scope.module_id_gen.gen(file_name);
 
@@ -125,7 +125,7 @@ where
     }
 
     /// This methods returns [Source]s which should be loaded.
-    fn analyze(
+    pub fn analyze(
         &self,
         file_name: &FileName,
         mut data: ModuleData,
@@ -384,14 +384,14 @@ where
 }
 
 #[derive(Debug, Default)]
-pub(crate) struct Imports {
+pub struct Imports {
     /// If imported ids are empty, it is a side-effect import.
     pub specifiers: Vec<(Source, Vec<Specifier>)>,
 }
 
 /// Clone is relatively cheap
 #[derive(Debug, Clone, Is)]
-pub(crate) enum Specifier {
+pub enum Specifier {
     Specific {
         local: Id,
         alias: Option<Id>,
@@ -404,7 +404,7 @@ pub(crate) enum Specifier {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub(crate) struct Source {
+pub struct Source {
     pub is_loaded_synchronously: bool,
     pub is_unconditional: bool,
 
