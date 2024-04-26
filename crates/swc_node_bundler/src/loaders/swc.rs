@@ -224,7 +224,7 @@ impl SwcLoader {
                     filename: String::new(),
                     config_file: None,
                     root: None,
-                    swcrc: true,
+                    swcrc: self.options.swcrc,
                     env_name: { env::var("NODE_ENV").unwrap_or_else(|_| "development".into()) },
                     ..Default::default()
                 },
