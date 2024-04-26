@@ -3,7 +3,11 @@
 #![allow(clippy::mutable_key_type)]
 
 pub use self::{
-    bundler::{Bundle, BundleKind, Bundler, Config, ModuleType},
+    bundler::{
+        export::Exports,
+        load::{Imports, Specifier, TransformedModule},
+        Bundle, BundleKind, Bundler, Config, ModuleType,
+    },
     hook::{Hook, ModuleRecord},
     id::ModuleId,
     load::{Load, ModuleData},

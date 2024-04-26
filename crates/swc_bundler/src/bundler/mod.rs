@@ -11,7 +11,7 @@ use self::scope::Scope;
 use crate::{Hook, Load, ModuleId, Resolve};
 
 mod chunk;
-mod export;
+pub mod export;
 mod finalize;
 mod helpers;
 mod import;
