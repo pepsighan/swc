@@ -206,7 +206,7 @@ where
 
     /// Sets `swc_common::GLOBALS`
     #[inline]
-    fn run<F, Ret>(&self, op: F) -> Ret
+    pub fn run<F, Ret>(&self, op: F) -> Ret
     where
         F: FnOnce() -> Ret,
     {
