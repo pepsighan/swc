@@ -86,7 +86,7 @@ where
     globals: &'a Globals,
     cm: Lrc<SourceMap>,
     loader: L,
-    resolver: R,
+    pub resolver: R,
 
     _helper_ctxt: SyntaxContext,
     /// Used to mark nodes as synthesized.
