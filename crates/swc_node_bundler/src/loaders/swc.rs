@@ -240,8 +240,9 @@ impl SwcLoader {
             // Note that we don't apply compat transform at loading phase.
             let program = if let Some(config) = config {
                 let program = config.program;
-                // cmd-c: does not require any passes. just ast.
-                // let mut pass = config.pass;
+                // The passes have been modified to just transform the imports and nothing else.
+                // I just need AST as is for most part.
+                let mut pass = config.pass;
 
                 helpers::HELPERS.set(&helpers, || {
                     HANDLER.set(handler, || {
@@ -260,9 +261,9 @@ impl SwcLoader {
                         ));
                         let program = program
                             .fold_with(&mut expr_simplifier(unresolved_mark, Default::default()));
-                        program.fold_with(&mut dead_branch_remover(unresolved_mark))
+                        let program = program.fold_with(&mut dead_branch_remover(unresolved_mark));
 
-                        // program.fold_with(&mut pass)
+                        program.fold_with(&mut pass)
                     })
                 })
             } else {
