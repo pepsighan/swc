@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 use std::{
     collections::{HashMap, HashSet},
     env,
@@ -495,8 +497,8 @@ impl Options {
             }
         };
 
-        let unresolved_ctxt = SyntaxContext::empty().apply_mark(unresolved_mark);
-        let top_level_ctxt = SyntaxContext::empty().apply_mark(top_level_mark);
+        // let unresolved_ctxt = SyntaxContext::empty().apply_mark(unresolved_mark);
+        // let top_level_ctxt = SyntaxContext::empty().apply_mark(top_level_mark);
 
         let pass = chain!(
             const_modules,
@@ -506,17 +508,17 @@ impl Options {
             json_parse_pass
         );
 
-        let import_export_assign_config = match cfg.module {
-            Some(ModuleConfig::Es6(..)) => TsImportExportAssignConfig::EsNext,
-            Some(ModuleConfig::CommonJs(..))
-            | Some(ModuleConfig::Amd(..))
-            | Some(ModuleConfig::Umd(..)) => TsImportExportAssignConfig::Preserve,
-            Some(ModuleConfig::NodeNext(..)) => TsImportExportAssignConfig::NodeNext,
-            // TODO: should Preserve for SystemJS
-            _ => TsImportExportAssignConfig::Classic,
-        };
+        // let import_export_assign_config = match cfg.module {
+        //     Some(ModuleConfig::Es6(..)) => TsImportExportAssignConfig::EsNext,
+        //     Some(ModuleConfig::CommonJs(..))
+        //     | Some(ModuleConfig::Amd(..))
+        //     | Some(ModuleConfig::Umd(..)) => TsImportExportAssignConfig::Preserve,
+        //     Some(ModuleConfig::NodeNext(..)) => TsImportExportAssignConfig::NodeNext,
+        //     // TODO: should Preserve for SystemJS
+        //     _ => TsImportExportAssignConfig::Classic,
+        // };
 
-        let verbatim_module_syntax = transform.verbatim_module_syntax.into_bool();
+        // let verbatim_module_syntax = transform.verbatim_module_syntax.into_bool();
 
         let charset = cfg.jsc.output.charset.or_else(|| {
             if js_minify.as_ref()?.format.ascii_only {
@@ -567,7 +569,7 @@ impl Options {
             comments.map(|v| v as _),
         );
 
-        let keep_import_attributes = experimental.keep_import_attributes.into_bool();
+        // let keep_import_attributes = experimental.keep_import_attributes.into_bool();
 
         #[cfg(feature = "plugin")]
         let plugin_transforms = {
@@ -655,112 +657,114 @@ impl Options {
             }
         };
 
-        #[cfg(not(feature = "plugin"))]
-        let plugin_transforms = {
-            if experimental.plugins.is_some() {
-                handler.warn(
-                    "Plugin is not supported with current @swc/core. Plugin transform will be \
-                     skipped.",
-                );
-            }
-            noop()
-        };
+        // #[cfg(not(feature = "plugin"))]
+        // let plugin_transforms = {
+        //     if experimental.plugins.is_some() {
+        //         handler.warn(
+        //             "Plugin is not supported with current @swc/core. Plugin transform
+        // will be \              skipped.",
+        //         );
+        //     }
+        //     noop()
+        // };
 
-        let pass: Box<dyn Fold> = if experimental
-            .disable_builtin_transforms_for_internal_testing
-            .into_bool()
-        {
-            Box::new(plugin_transforms)
-        } else {
-            Box::new(chain!(
-                lint_to_fold(swc_ecma_lints::rules::all(LintParams {
-                    program: &program,
-                    lint_config: &lints,
-                    top_level_ctxt,
-                    unresolved_ctxt,
-                    es_version,
-                    source_map: cm.clone(),
-                })),
-                // Decorators may use type information
-                Optional::new(
-                    match transform.decorator_version.unwrap_or_default() {
-                        DecoratorVersion::V202112 => {
-                            Either::Left(decorators(decorators::Config {
-                                legacy: transform.legacy_decorator.into_bool(),
-                                emit_metadata: transform.decorator_metadata.into_bool(),
-                                use_define_for_class_fields: !assumptions.set_public_class_fields,
-                            }))
-                        }
-                        DecoratorVersion::V202203 => {
-                            Either::Right(
-                            swc_ecma_transforms::proposals::decorator_2022_03::decorator_2022_03(),
-                        )
-                        }
-                    },
-                    syntax.decorators()
-                ),
-                Optional::new(
-                    explicit_resource_management(),
-                    syntax.explicit_resource_management()
-                ),
-                // The transform strips import assertions, so it's only enabled if
-                // keep_import_assertions is false.
-                Optional::new(import_assertions(), !keep_import_attributes),
-                Optional::new(
-                    typescript::tsx::<Option<&dyn Comments>>(
-                        cm.clone(),
-                        typescript::Config {
-                            import_export_assign_config,
-                            verbatim_module_syntax,
-                            ..Default::default()
-                        },
-                        typescript::TsxConfig {
-                            pragma: Some(
-                                transform
-                                    .react
-                                    .pragma
-                                    .clone()
-                                    .unwrap_or_else(default_pragma)
-                            ),
-                            pragma_frag: Some(
-                                transform
-                                    .react
-                                    .pragma_frag
-                                    .clone()
-                                    .unwrap_or_else(default_pragma_frag)
-                            ),
-                        },
-                        comments.map(|v| v as _),
-                        top_level_mark
-                    ),
-                    syntax.typescript()
-                ),
-                plugin_transforms,
-                custom_before_pass(&program),
-                // handle jsx
-                Optional::new(
-                    react::react::<&dyn Comments>(
-                        cm.clone(),
-                        comments.map(|v| v as _),
-                        transform.react,
-                        top_level_mark,
-                        unresolved_mark
-                    ),
-                    syntax.jsx()
-                ),
-                pass,
-                Optional::new(jest::jest(), transform.hidden.jest.into_bool()),
-                Optional::new(
-                    dropped_comments_preserver(comments.cloned()),
-                    preserve_all_comments
-                ),
-            ))
-        };
+        // let pass: Box<dyn Fold> = if experimental
+        //     .disable_builtin_transforms_for_internal_testing
+        //     .into_bool()
+        // {
+        //     Box::new(plugin_transforms)
+        // } else {
+        //     Box::new(chain!(
+        //         lint_to_fold(swc_ecma_lints::rules::all(LintParams {
+        //             program: &program,
+        //             lint_config: &lints,
+        //             top_level_ctxt,
+        //             unresolved_ctxt,
+        //             es_version,
+        //             source_map: cm.clone(),
+        //         })),
+        //         // Decorators may use type information
+        //         Optional::new(
+        //             match transform.decorator_version.unwrap_or_default() {
+        //                 DecoratorVersion::V202112 => {
+        //                     Either::Left(decorators(decorators::Config {
+        //                         legacy: transform.legacy_decorator.into_bool(),
+        //                         emit_metadata:
+        // transform.decorator_metadata.into_bool(),
+        // use_define_for_class_fields: !assumptions.set_public_class_fields,
+        //                     }))
+        //                 }
+        //                 DecoratorVersion::V202203 => {
+        //                     Either::Right(
+        //
+        // swc_ecma_transforms::proposals::decorator_2022_03::decorator_2022_03(),
+        //                 )
+        //                 }
+        //             },
+        //             syntax.decorators()
+        //         ),
+        //         Optional::new(
+        //             explicit_resource_management(),
+        //             syntax.explicit_resource_management()
+        //         ),
+        //         // The transform strips import assertions, so it's only enabled if
+        //         // keep_import_assertions is false.
+        //         Optional::new(import_assertions(), !keep_import_attributes),
+        //         Optional::new(
+        //             typescript::tsx::<Option<&dyn Comments>>(
+        //                 cm.clone(),
+        //                 typescript::Config {
+        //                     import_export_assign_config,
+        //                     verbatim_module_syntax,
+        //                     ..Default::default()
+        //                 },
+        //                 typescript::TsxConfig {
+        //                     pragma: Some(
+        //                         transform
+        //                             .react
+        //                             .pragma
+        //                             .clone()
+        //                             .unwrap_or_else(default_pragma)
+        //                     ),
+        //                     pragma_frag: Some(
+        //                         transform
+        //                             .react
+        //                             .pragma_frag
+        //                             .clone()
+        //                             .unwrap_or_else(default_pragma_frag)
+        //                     ),
+        //                 },
+        //                 comments.map(|v| v as _),
+        //                 top_level_mark
+        //             ),
+        //             syntax.typescript()
+        //         ),
+        //         plugin_transforms,
+        //         custom_before_pass(&program),
+        //         // handle jsx
+        //         Optional::new(
+        //             react::react::<&dyn Comments>(
+        //                 cm.clone(),
+        //                 comments.map(|v| v as _),
+        //                 transform.react,
+        //                 top_level_mark,
+        //                 unresolved_mark
+        //             ),
+        //             syntax.jsx()
+        //         ),
+        //         pass,
+        //         Optional::new(jest::jest(), transform.hidden.jest.into_bool()),
+        //         Optional::new(
+        //             dropped_comments_preserver(comments.cloned()),
+        //             preserve_all_comments
+        //         ),
+        //     ))
+        // };
 
         Ok(BuiltInput {
             program,
             minify: cfg.minify.into_bool(),
-            pass,
+            pass: Box::new(pass),
             external_helpers,
             syntax,
             target: es_version,
