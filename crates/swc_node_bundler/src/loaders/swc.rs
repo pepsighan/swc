@@ -219,7 +219,6 @@ impl SwcLoader {
                     disable_hygiene: false,
                     disable_fixer: true,
                     top_level_mark: self.options.top_level_mark,
-                    cwd: self.options.cwd.clone(),
                     caller: None,
                     filename: String::new(),
                     config_file: None,
